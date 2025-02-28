@@ -94,16 +94,12 @@ def create_templated_video(input_video_path, text_string, output_path, template_
         # Re-encode the temporary video with FFmpeg to ensure proper streaming metadata.
         ffmpeg_cmd = [
             "ffmpeg",
-            "-y",                    # Overwrite output without prompt.
-            "-i", temp_output,       # Input file.
-            "-c:v", "libx264",       # Re-encode video to H.264.
-            "-profile:v", "baseline",# Use baseline profile for compatibility.
-            "-level", "3.0",
-            "-pix_fmt", "yuv420p",   # Ensure compatibility.
-            "-preset", "fast",
-            "-crf", "22",            # Quality setting.
-            "-movflags", "+faststart", # Move moov atom to the beginning.
-            final_output             # Final output file.
+            "-i", temp_output_path,
+            "-vf", "scale=720:-1",  # Reduce width to 720px, keeping aspect ratio
+            "-c:v", "libx264",
+            "-preset", "fast",  # Use a faster encoding preset
+            "-crf", "23",  # Adjust compression rate
+            "-y", output_path
         ]
         print("Running FFmpeg for re-encoding...")
         ffmpeg_result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
